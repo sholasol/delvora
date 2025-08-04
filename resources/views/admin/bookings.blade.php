@@ -1,256 +1,297 @@
 <x-admin-layout>
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <button class="btn btn-outline-secondary d-md-none" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1 class="h4 mb-0">Bookings Management</h1>
-            <a href="../index.html" class="btn btn-outline-primary btn-sm">View Site</a>
-        </div>
-    </div>
-
-    <!-- Admin Content -->
     <div class="admin-content">
-        <div class="admin-main">
-            <!-- Filter Controls -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <select class="form-select" id="statusFilter">
-                                <option value="">All Statuses</option>
-                                <option value="pending">Pending</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="date" class="form-control" id="dateFilter">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Search customer..." id="searchFilter">
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-primary w-100" onclick="applyFilters()">
-                                <i class="fas fa-filter me-2"></i>
-                                Apply Filters
-                            </button>
-                        </div>
-                    </div>
+        <div class="container-fluid">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Bookings Management</h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportModal">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
                 </div>
             </div>
 
-            <!-- Bookings List -->
-            <div id="bookingsList">
-                <!-- Booking Item 1 -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">Booking #001</h6>
-                                <small class="text-muted">Created Dec 10, 2024</small>
-                            </div>
-                            <span class="badge status-pending">Pending</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-user me-2"></i>
-                                    Customer Information
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Name:</strong> Sarah Johnson</p>
-                                    <p class="mb-1"><strong>Email:</strong> sarah@example.com</p>
-                                    <p class="mb-1"><strong>Phone:</strong> (555) 123-4567</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-calendar me-2"></i>
-                                    Service Details
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Service:</strong> Deep Cleaning</p>
-                                    <p class="mb-1"><strong>Date:</strong> Dec 15, 2024</p>
-                                    <p class="mb-1"><strong>Time:</strong> 10:00 AM</p>
-                                    <p class="mb-1"><strong>Amount:</strong> $200</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">
-                                <i class="fas fa-map-marker-alt me-2"></i>
-                                Service Address
-                            </h6>
-                            <p class="small mb-0">123 Main Street, Anytown, ST 12345</p>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">Special Instructions</h6>
-                            <p class="small bg-light p-2 rounded">Please focus on the kitchen area, especially the oven and refrigerator.</p>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-                            <button class="btn btn-success btn-sm" onclick="updateBookingStatus(1, 'confirmed')">
-                                <i class="fas fa-check me-1"></i>
-                                Confirm
-                            </button>
-                            <select class="form-select form-select-sm" style="width: auto;" onchange="assignStaff(1, this.value)">
-                                <option value="">Assign to staff</option>
-                                <option value="1">Sarah Johnson</option>
-                                <option value="2">Mike Rodriguez</option>
-                                <option value="3">Emma Davis</option>
+            <!-- Filters -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
-                            <button class="btn btn-outline-primary btn-sm" onclick="viewBookingDetails(1)">
-                                <i class="fas fa-eye me-1"></i>
-                                View Details
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="updateBookingStatus(1, 'cancelled')">
-                                <i class="fas fa-times me-1"></i>
-                                Cancel
-                            </button>
                         </div>
-                    </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date Range</label>
+                            <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Search</label>
+                            <input type="text" name="search" class="form-control" placeholder="Reference, Customer, Service..." value="{{ request('search') }}">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('bookings') }}" class="btn btn-secondary">Clear</a>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <!-- Booking Item 2 -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">Booking #002</h6>
-                                <small class="text-muted">Created Dec 9, 2024</small>
-                            </div>
-                            <span class="badge status-confirmed">Confirmed</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-user me-2"></i>
-                                    Customer Information
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Name:</strong> Mike Rodriguez</p>
-                                    <p class="mb-1"><strong>Email:</strong> mike@example.com</p>
-                                    <p class="mb-1"><strong>Phone:</strong> (555) 987-6543</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-calendar me-2"></i>
-                                    Service Details
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Service:</strong> Standard House Cleaning</p>
-                                    <p class="mb-1"><strong>Date:</strong> Dec 14, 2024</p>
-                                    <p class="mb-1"><strong>Time:</strong> 2:00 PM</p>
-                                    <p class="mb-1"><strong>Amount:</strong> $120</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">
-                                <i class="fas fa-map-marker-alt me-2"></i>
-                                Service Address
-                            </h6>
-                            <p class="small mb-0">456 Oak Avenue, Somewhere, ST 12346</p>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">Assigned Staff</h6>
-                            <p class="small mb-0">Emma Davis</p>
+            <!-- Bookings Table -->
+            <div class="card shadow">
+                <div class="card-body">
+                    @if($bookings->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Customer</th>
+                                        <th>Service</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th>Payment</th>
+                                        <th>Amount</th>
+                                        <th>Staff</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($bookings as $booking)
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $booking->booking_reference }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ $booking->created_at->format('M j, Y') }}</small>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ $booking->customer->name ?? $booking->name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ $booking->email }}</small>
+                                                <br>
+                                                <small class="text-muted">{{ $booking->phone }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong>{{ $booking->service_name }}</strong>
+                                            @if($booking->service)
+                                                <br>
+                                                <small class="text-muted">{{ $booking->service->duration }}</small>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ $booking->preferred_date ? $booking->preferred_date->format('M j, Y') : 'N/A' }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ $booking->preferred_time }}</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge {{ $booking->status_badge }}">
+                                                {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {{ $booking->payment_status_badge }}">
+                                                {{ ucfirst($booking->payment_status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>${{ number_format($booking->total_amount, 2) }}</strong>
+                                        </td>
+                                        <td>
+                                            @if($booking->assignedStaff)
+                                                <div>
+                                                    <strong>{{ $booking->assignedStaff->name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ $booking->assignedStaff->position }}</small>
+                                                </div>
+                                            @else
+                                                <span class="text-muted">Not assigned</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bookingModal{{ $booking->id }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#statusModal{{ $booking->id }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
 
-                        <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-                            <button class="btn btn-primary btn-sm" onclick="updateBookingStatus(2, 'in-progress')">
-                                <i class="fas fa-play me-1"></i>
-                                Start Service
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="viewBookingDetails(2)">
-                                <i class="fas fa-eye me-1"></i>
-                                View Details
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="updateBookingStatus(2, 'cancelled')">
-                                <i class="fas fa-times me-1"></i>
-                                Cancel
-                            </button>
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-center mt-4">
+                            {{ $bookings->links() }}
                         </div>
-                    </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar fa-3x text-gray-300 mb-3"></i>
+                            <h5 class="text-gray-500">No bookings found</h5>
+                            <p class="text-gray-400">There are no bookings matching your criteria.</p>
+                        </div>
+                    @endif
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Booking Item 3 -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">Booking #003</h6>
-                                <small class="text-muted">Created Dec 8, 2024</small>
-                            </div>
-                            <span class="badge status-completed">Completed</span>
+    <!-- Booking Detail Modals -->
+    @foreach($bookings as $booking)
+    <div class="modal fade" id="bookingModal{{ $booking->id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Details - {{ $booking->booking_reference }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Customer Information</h6>
+                            <p><strong>Name:</strong> {{ $booking->customer->name ?? $booking->name }}</p>
+                            <p><strong>Email:</strong> {{ $booking->email }}</p>
+                            <p><strong>Phone:</strong> {{ $booking->phone }}</p>
+                            <p><strong>Address:</strong> {{ $booking->address }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Booking Information</h6>
+                            <p><strong>Service:</strong> {{ $booking->service_name }}</p>
+                            <p><strong>Date:</strong> {{ $booking->preferred_date ? $booking->preferred_date->format('l, F j, Y') : 'N/A' }}</p>
+                            <p><strong>Time:</strong> {{ $booking->preferred_time }}</p>
+                            <p><strong>Amount:</strong> ${{ number_format($booking->total_amount, 2) }}</p>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-user me-2"></i>
-                                    Customer Information
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Name:</strong> Emma Davis</p>
-                                    <p class="mb-1"><strong>Email:</strong> emma@example.com</p>
-                                    <p class="mb-1"><strong>Phone:</strong> (555) 456-7890</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="mb-2">
-                                    <i class="fas fa-calendar me-2"></i>
-                                    Service Details
-                                </h6>
-                                <div class="small">
-                                    <p class="mb-1"><strong>Service:</strong> Office Cleaning</p>
-                                    <p class="mb-1"><strong>Date:</strong> Dec 13, 2024</p>
-                                    <p class="mb-1"><strong>Time:</strong> 9:00 AM</p>
-                                    <p class="mb-1"><strong>Amount:</strong> $80</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">
-                                <i class="fas fa-map-marker-alt me-2"></i>
-                                Service Address
-                            </h6>
-                            <p class="small mb-0">789 Business Blvd, Corporate City, ST 12347</p>
-                        </div>
-                        
-                        <div class="mt-3">
-                            <h6 class="mb-2">Assigned Staff</h6>
-                            <p class="small mb-0">Sarah Johnson</p>
-                        </div>
+                    @if($booking->message)
+                    <div class="mt-3">
+                        <h6>Message</h6>
+                        <p>{{ $booking->message }}</p>
+                    </div>
+                    @endif
+                    @if($booking->special_instructions)
+                    <div class="mt-3">
+                        <h6>Special Instructions</h6>
+                        <p>{{ $booking->special_instructions }}</p>
+                    </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
-                            <button class="btn btn-outline-success btn-sm" disabled>
-                                <i class="fas fa-check me-1"></i>
-                                Completed
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="viewBookingDetails(3)">
-                                <i class="fas fa-eye me-1"></i>
-                                View Details
-                            </button>
+    <!-- Status Update Modal -->
+    <div class="modal fade" id="statusModal{{ $booking->id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Booking Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="statusForm{{ $booking->id }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select" required>
+                                <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="in_progress" {{ $booking->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Assign Staff</label>
+                            <select name="assigned_staff_id" class="form-select">
+                                <option value="">Select Staff</option>
+                                @foreach($staff as $member)
+                                <option value="{{ $member->id }}" {{ $booking->assigned_staff_id == $member->id ? 'selected' : '' }}>
+                                    {{ $member->name }} - {{ $member->position }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Export Bookings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Export bookings data in various formats:</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary">Export to Excel</button>
+                        <button class="btn btn-outline-secondary">Export to PDF</button>
+                        <button class="btn btn-outline-success">Export to CSV</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Handle status form submissions
+        @foreach($bookings as $booking)
+        document.getElementById('statusForm{{ $booking->id }}').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('{{ route("bookings.update-status", $booking->id) }}', {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: formData.get('status'),
+                    assigned_staff_id: formData.get('assigned_staff_id')
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error updating booking status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating booking status');
+            });
+        });
+        @endforeach
+    </script>
 </x-admin-layout>

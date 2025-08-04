@@ -13,7 +13,7 @@
                     </p>
                 </div>
                 <div class="col-lg-6">
-                    <img src="/placeholder.svg?height=500&width=600" alt="Delvora team" class="img-fluid rounded shadow-lg">
+                    <img src="https://images.pexels.com/photos/6195955/pexels-photo-6195955.jpeg" alt="Delvora team" class="img-fluid rounded shadow-lg">
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                     </p>
                 </div>
                 <div class="col-lg-6">
-                    <img src="/placeholder.svg?height=400&width=500" alt="Company history" class="img-fluid rounded shadow-lg">
+                    <img src="https://images.pexels.com/photos/6195273/pexels-photo-6195273.jpeg" alt="Company history" class="img-fluid rounded shadow-lg">
                 </div>
             </div>
         </div>

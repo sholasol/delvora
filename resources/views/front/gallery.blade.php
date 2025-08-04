@@ -132,8 +132,8 @@
                 <h2 class="display-6 fw-bold mb-3">Ready for Your Own Transformation?</h2>
                 <p class="lead mb-4">Let our professional team create amazing results in your space too.</p>
                 <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                    <a href="booking.html" class="btn btn-light btn-lg">Book Your Service</a>
-                    <a href="contact.html" class="btn btn-outline-light btn-lg">Get Free Quote</a>
+                    <a href="{{route('front.book')}}" class="btn btn-light btn-lg">Book Your Service</a>
+                    <a href="{{route('front.contact')}}" class="btn btn-outline-light btn-lg">Get Free Quote</a>
                 </div>
             </div>
         </section>

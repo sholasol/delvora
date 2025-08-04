@@ -18,7 +18,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-6">
-                                <img src="/placeholder.svg?height=300&width=400" class="img-fluid h-100 object-fit-cover" alt="Standard House Cleaning">
+                                <img src="https://images.pexels.com/photos/6195955/pexels-photo-6195955.jpeg" class="img-fluid h-100 object-fit-cover" alt="Standard House Cleaning">
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body h-100 d-flex flex-column">
@@ -60,7 +60,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-6">
-                                <img src="/placeholder.svg?height=300&width=400" class="img-fluid h-100 object-fit-cover" alt="Deep Cleaning">
+                                <img src="https://images.pexels.com/photos/735319/pexels-photo-735319.jpeg" class="img-fluid h-100 object-fit-cover" alt="Deep Cleaning">
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body h-100 d-flex flex-column">
@@ -102,7 +102,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-6">
-                                <img src="/placeholder.svg?height=300&width=400" class="img-fluid h-100 object-fit-cover" alt="Move-in/Move-out Cleaning">
+                                <img src="https://images.pexels.com/photos/30924413/pexels-photo-30924413.jpeg" class="img-fluid h-100 object-fit-cover" alt="Move-in/Move-out Cleaning">
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body h-100 d-flex flex-column">
@@ -144,7 +144,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-6">
-                                <img src="/placeholder.svg?height=300&width=400" class="img-fluid h-100 object-fit-cover" alt="Office Cleaning">
+                                <img src="https://images.pexels.com/photos/6195949/pexels-photo-6195949.jpeg" class="img-fluid h-100 object-fit-cover" alt="Office Cleaning">
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body h-100 d-flex flex-column">
@@ -186,7 +186,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="row g-0">
                             <div class="col-md-6">
-                                <img src="/placeholder.svg?height=300&width=400" class="img-fluid h-100 object-fit-cover" alt="Post-Construction Cleanup">
+                                <img src="https://images.pexels.com/photos/7587365/pexels-photo-7587365.jpeg" class="img-fluid h-100 object-fit-cover" alt="Post-Construction Cleanup">
                             </div>
                             <div class="col-md-6">
                                 <div class="card-body h-100 d-flex flex-column">
@@ -232,8 +232,8 @@
                             <h3 class="card-title mb-3">Need a Custom Quote?</h3>
                             <p class="card-text text-muted mb-4">Have a unique cleaning requirement? Contact us for a personalized quote tailored to your specific needs.</p>
                             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                                <a href="contact.html" class="btn btn-outline-primary">Get Custom Quote</a>
-                                <a href="booking.html" class="btn btn-primary">Book Standard Service</a>
+                                <a href="{{route('front.contact')}}" class="btn btn-outline-primary">Get Custom Quote</a>
+                                <a href="{{route('front.book')}}" class="btn btn-primary">Book Standard Service</a>
                             </div>
                         </div>
                     </div>

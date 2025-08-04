@@ -23,21 +23,25 @@
                 <i class="fas fa-calendar me-2"></i>
                 Bookings
             </a>
-            <a class="nav-link" href="customers.html">
+            <a class="nav-link" href="{{route('customers')}}">
                 <i class="fas fa-users me-2"></i>
                 Customers
             </a>
-            <a class="nav-link" href="staff.html">
+            <a class="nav-link" href="{{route('staff')}}">
                 <i class="fas fa-user-check me-2"></i>
                 Staff
             </a>
-            <a class="nav-link" href="payments.html">
-                <i class="fas fa-credit-card me-2"></i>
-                Payments
+            <a class="nav-link" href="{{route('services')}}">
+                <i class="fas fa-cogs me-2"></i>
+                Services
             </a>
-            <a class="nav-link" href="gallery.html">
+            <a class="nav-link" href="{{route('gallery')}}">
                 <i class="fas fa-images me-2"></i>
                 Gallery
+            </a>
+            <a class="nav-link" href="{{route('settings')}}">
+                <i class="fas fa-cog me-2"></i>
+                Settings
             </a>
             <hr class="text-muted">
             <form action="{{ route('logout') }}" method="POST">
