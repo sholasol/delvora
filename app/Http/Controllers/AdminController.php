@@ -36,9 +36,15 @@ class AdminController extends Controller
         return view('admin.index', compact('stats', 'recent_bookings', 'recent_customers'));
     }
 
-    public function bookings()
+
+    public function bookings(Request $request)
     {
+        $statusFilter = $request->query('status');
+
         $bookings = booking::with(['customer', 'service', 'assignedStaff'])
+            ->when($statusFilter, function ($query, $status) {
+                return $query->where('status', $status);
+            })
             ->latest()
             ->paginate(15);
 
@@ -72,10 +78,9 @@ class AdminController extends Controller
             Log::error('Status update email failed: ' . $e->getMessage());
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking status updated successfully!'
-        ]);
+
+        sweetalert()->success('Booking status updated successfully!');
+        return redirect()->back();
     }
 
     public function customers()
@@ -96,14 +101,21 @@ class AdminController extends Controller
         return view('admin.customer-details', compact('customer'));
     }
 
-    public function staff()
+    public function staff(Request $request)
     {
+        $statusFilter = $request->query('status');
+
         $staff = Staff::withCount('bookings')
             ->withCount(['bookings as completed_bookings' => function($query) {
                 $query->where('status', booking::STATUS_COMPLETED);
             }])
+            ->when($statusFilter, function ($query, $status) {
+                return $query->where('status', $status);
+            })
             ->latest()
             ->paginate(15);
+
+            
 
         return view('admin.staff', compact('staff'));
     }
@@ -139,10 +151,8 @@ class AdminController extends Controller
 
         Staff::create($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Staff member added successfully!'
-        ]);
+        sweetalert()->success('Staff member added successfully!');
+        return redirect()->back();
     }
 
     public function updateStaff(Request $request, $id)
@@ -181,10 +191,8 @@ class AdminController extends Controller
 
         $staff->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Staff member updated successfully!'
-        ]);
+        sweetalert()->success('Staff member updated successfully!');
+        return redirect()->back();
     }
 
     public function gallery()
@@ -234,10 +242,14 @@ class AdminController extends Controller
 
         gallery::create($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gallery item added successfully!'
-        ]);
+
+        sweetalert()->success('Gallery item added successfully!');
+        return redirect()->back();
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Gallery item added successfully!'
+        // ]);
     }
 
     public function updateGallery(Request $request, $id)
@@ -285,10 +297,10 @@ class AdminController extends Controller
 
         $gallery->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gallery item updated successfully!'
-        ]);
+        sweetalert()->success('Gallery item updated successfully!');
+        return redirect()->back();
+
+        
     }
 
     public function services()
@@ -324,10 +336,8 @@ class AdminController extends Controller
 
         services::create($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service added successfully!'
-        ]);
+        sweetalert()->success('Service created successfully!');
+        return redirect()->back();
     }
 
     public function updateService(Request $request, $id)
@@ -362,10 +372,13 @@ class AdminController extends Controller
 
         $service->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service updated successfully!'
-        ]);
+        sweetalert()->success('Service updated successfully!');
+        return redirect()->back();
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Service updated successfully!'
+        // ]);
     }
 
     public function settings()

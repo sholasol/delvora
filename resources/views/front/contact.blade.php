@@ -20,7 +20,8 @@
                                 <h3 class="card-title mb-0">Send us a Message</h3>
                             </div>
                             <div class="card-body p-4">
-                                <form id="contactForm">
+                                <form method="POST" action="{{route('contactSubmit')}}">
+                                    @csrf
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label for="name" class="form-label">Name *</label>

@@ -79,7 +79,7 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="me-3">
                                                     @if($service->image)
-                                                        <img src="{{ $service->image_url }}" alt="{{ $service->name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <img src="{{ asset('asset/image/' . $service->image) }}" alt="{{ $service->name }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                                     @else
                                                         <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
                                                             <i class="fas fa-broom fa-2x"></i>
@@ -114,7 +114,23 @@
                                             <span class="badge bg-info">{{ $service->category }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge {{ $service->status_badge }}">
+                                            @php
+                                                $stus = '';
+                                                switch ($service->status) {
+                                                    case 'active':
+                                                        $stus = 'primary';
+                                                        break;
+                                                    case 'inactive':
+                                                        $stus = 'info';
+
+                                                    case 'draft':
+                                                        $stus = 'warning';
+                                                        break;
+                                                    default:
+                                                        $stus = 'danger';
+                                                }
+                                            @endphp
+                                            <span class="text-{{ $stus }}">
                                                 {{ ucfirst($service->status) }}
                                             </span>
                                         </td>
@@ -161,7 +177,8 @@
                     <h5 class="modal-title">Add New Service</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="addServiceForm" enctype="multipart/form-data">
+                <form method="POST" action="{{route('services.store')}}" enctype="multipart/form-data">
+                    @csrf
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -254,7 +271,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($service->image)
-                                <img src="{{ $service->image_url }}" alt="{{ $service->name }}" class="img-fluid rounded">
+                                <img src="{{ asset('asset/image/' . $service->image) }}" alt="{{ $service->name }}" class="img-fluid rounded">
                             @else
                                 <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="height: 200px;">
                                     <i class="fas fa-broom fa-3x"></i>
@@ -309,7 +326,10 @@
                     <h5 class="modal-title">Edit Service - {{ $service->name }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="editServiceForm{{ $service->id }}" enctype="multipart/form-data">
+                <form method="POST" action="{{route('services.update', ['id' => $service->id])}}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PATCH')
+
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">

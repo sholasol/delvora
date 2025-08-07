@@ -42,7 +42,7 @@
                             <p class="text-muted text-center mb-0">Fill out the form below to schedule your cleaning service</p>
                         </div>
                         <div class="card-body p-4">
-                            <form id="bookingForm">
+                            <form method="POST" action="{{route('bookings.store')}}">
                                 @csrf
                                 
                                 <!-- Service Selection -->

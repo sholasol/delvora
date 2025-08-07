@@ -17,6 +17,7 @@ class BookingController extends Controller
 {
     public function store(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'service_id' => 'required|exists:services,id',
             'preferred_date' => 'required|date|after:today',
@@ -30,10 +31,7 @@ class BookingController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+            sweetalert()->success('Validation error: '.  $validator->errors());
         }
 
         try {
@@ -94,21 +92,17 @@ class BookingController extends Controller
                 Log::error('Email sending failed: ' . $e->getMessage());
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Booking created successfully!',
-                'booking_reference' => $booking->booking_reference,
-                'redirect_url' => route('front.confirmation', ['reference' => $booking->booking_reference])
-            ]);
+
+            sweetalert()->success('Your submission has been received successfully.');
+            return redirect()->route('front.confirmation', ['reference' => $booking->booking_reference]);
+
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Booking creation failed: ' . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while creating your booking. Please try again.'
-            ], 500);
+            sweetalert()->error('An error occurred while creating your booking. Please try again.');
+            return redirect()->back();
         }
     }
 
@@ -136,16 +130,12 @@ class BookingController extends Controller
         
         if ($booking->status === booking::STATUS_PENDING) {
             $booking->update(['status' => booking::STATUS_CANCELLED]);
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Booking cancelled successfully!'
-            ]);
+
+            sweetalert()->success('Booking cancelled  successfully.');
+            return redirect()->back();
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Booking cannot be cancelled at this stage.'
-        ], 400);
+        sweetalert()->success('Booking cannot be cancelled at this stage!.');
+        return redirect()->back();
     }
 }

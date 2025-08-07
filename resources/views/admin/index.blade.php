@@ -113,7 +113,30 @@
                                                 <td>{{ $booking->service_name }}</td>
                                                 <td>{{ $booking->preferred_date ? $booking->preferred_date->format('M j, Y') : 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge {{ $booking->status_badge }}">
+                                                        @php
+                                                        $status = '';
+                                                        switch ($booking->status) {
+                                                            case 'in_progress':
+                                                                $status = 'warning';
+                                                                break;
+                                                            case 'confirmed':
+                                                                $status = 'primary';
+                                                                break;
+                                                            case 'completed':
+                                                                $status = 'success';
+                                                                break;
+                                                            case 'cancelled':
+                                                                $status = 'danger';
+                                                                break;
+                                                            case 'pending':
+                                                                $status = 'danger';
+                                                                break;
+                                                            default:
+                                                                $status = 'dark';
+                                                        }
+                                                    @endphp
+        
+                                                    <span class="text-{{ $status }}">
                                                         {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
                                                     </span>
                                                 </td>

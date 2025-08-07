@@ -21,6 +21,7 @@ Route::get('/book', [FrontController::class, 'book'])->name('front.book');
 Route::get('/confirmation/{reference}', [FrontController::class, 'confirmation'])->name('front.confirmation');
 Route::get('/track/{reference}', [FrontController::class, 'track'])->name('front.track');
 Route::get('/search/services', [FrontController::class, 'searchServices'])->name('front.search.services');
+Route::post('/contactSubmit', [FrontController::class, 'contactSubmit'])->name('contactSubmit');
 
 // Booking Routes
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');

@@ -109,7 +109,20 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge {{ $customer->status_badge }}">
+                                            @php
+                                                $stus = '';
+                                                switch ($customer->status) {
+                                                    case 'active':
+                                                        $stus = 'success';
+                                                        break;
+                                                    case 'blocked':
+                                                        $stus = 'warning';
+                                                        break;
+                                                    default:
+                                                        $stus = 'danger';
+                                                }
+                                            @endphp
+                                            <span class="text-{{ $stus }}">
                                                 {{ ucfirst($customer->status) }}
                                             </span>
                                         </td>
@@ -157,7 +170,9 @@
                     <h5 class="modal-title">Edit Customer - {{ $customer->name }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="editCustomerForm{{ $customer->id }}">
+                <form method="POST" action="{{route('customers.update', ['id' => $customer->id])}}">
+                    @csrf
+                    @method('PATCH')
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">

@@ -56,10 +56,10 @@
                                     <tr>
                                         <th>Reference</th>
                                         <th>Customer</th>
-                                        <th>Service</th>
-                                        <th>Date & Time</th>
+                                        {{-- <th>Service</th> --}}
+                                        <th>Date</th>
                                         <th>Status</th>
-                                        <th>Payment</th>
+                                        {{-- <th>Payment</th> --}}
                                         <th>Amount</th>
                                         <th>Staff</th>
                                         <th>Actions</th>
@@ -69,9 +69,33 @@
                                     @foreach($bookings as $booking)
                                     <tr>
                                         <td>
-                                            <strong>{{ $booking->booking_reference }}</strong>
+                                            <span>{{ $booking->booking_reference }}</span>
                                             <br>
                                             <small class="text-muted">{{ $booking->created_at->format('M j, Y') }}</small>
+                                            <hr class="text-primary"/>
+                                            <strong>{{ $booking->service_name }}</strong>
+                                            @if($booking->service)
+                                                <br>
+                                                <small class="text-muted">{{ $booking->service->duration }}</small>
+                                            @endif
+
+                                            @php
+                                            $stus = '';
+                                            switch ($booking->payment_status_badge) {
+                                                case 'badge-success':
+                                                    $stus = 'success';
+                                                    break;
+                                                case ' badge-warning':
+                                                    $stus = 'warning';
+                                                    break;
+                                                default:
+                                                    $stus = 'danger';
+                                            }
+                                        @endphp
+                                        <br/>
+                                        <span class="text-{{ $stus }}">
+                                           Payment:  {{ ucfirst($booking->payment_status) }}
+                                        </span>
                                         </td>
                                         <td>
                                             <div>
@@ -82,13 +106,13 @@
                                                 <small class="text-muted">{{ $booking->phone }}</small>
                                             </div>
                                         </td>
-                                        <td>
+                                        {{-- <td>
                                             <strong>{{ $booking->service_name }}</strong>
                                             @if($booking->service)
                                                 <br>
                                                 <small class="text-muted">{{ $booking->service->duration }}</small>
                                             @endif
-                                        </td>
+                                        </td> --}}
                                         <td>
                                             <div>
                                                 <strong>{{ $booking->preferred_date ? $booking->preferred_date->format('M j, Y') : 'N/A' }}</strong>
@@ -97,15 +121,51 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge {{ $booking->status_badge }}">
+                                            @php
+                                                $status = '';
+                                                switch ($booking->status) {
+                                                    case 'in_progress':
+                                                        $status = 'warning';
+                                                        break;
+                                                    case 'confirmed':
+                                                        $status = 'primary';
+                                                        break;
+                                                    case 'completed':
+                                                        $status = 'success';
+                                                        break;
+                                                    case 'cancelled':
+                                                        $status = 'danger';
+                                                        break;
+                                                    case 'pending':
+                                                        $status = 'danger';
+                                                        break;
+                                                    default:
+                                                        $status = 'dark';
+                                                }
+                                            @endphp
+
+                                            <span class="text-{{ $status }}">
                                                 {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
                                             </span>
                                         </td>
-                                        <td>
-                                            <span class="badge {{ $booking->payment_status_badge }}">
+                                        {{-- <td>
+                                            @php
+                                                $stus = '';
+                                                switch ($booking->payment_status_badge) {
+                                                    case 'badge-success':
+                                                        $stus = 'success';
+                                                        break;
+                                                    case ' badge-warning':
+                                                        $stus = 'warning';
+                                                        break;
+                                                    default:
+                                                        $stus = 'danger';
+                                                }
+                                            @endphp
+                                            <span class="text-{{ $stus }}">
                                                 {{ ucfirst($booking->payment_status) }}
                                             </span>
-                                        </td>
+                                        </td> --}}
                                         <td>
                                             <strong>${{ number_format($booking->total_amount, 2) }}</strong>
                                         </td>
@@ -206,7 +266,10 @@
                     <h5 class="modal-title">Update Booking Status</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="statusForm{{ $booking->id }}">
+                <form method="POST" action="{{route('bookings.update-status', ['id' => $booking->id])}}">
+                    @csrf
+                    @method('PATCH')
+
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Status</label>

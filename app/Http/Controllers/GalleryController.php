@@ -11,9 +11,13 @@ use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $statusFilter = $request->query('status');
         $galleries = gallery::with(['customer', 'booking', 'staff'])
+        ->when($statusFilter, function ($query, $status) {
+            return $query->where('status', $status);
+        })
             ->latest()
             ->paginate(12);
 
@@ -35,33 +39,32 @@ class GalleryController extends Controller
             'service_type' => 'required|string|max:255',
             'before_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
             'after_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'featured' => 'boolean',
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $data = $request->all();
 
+        $data['featured'] = $request->has('featured');
+
+        // Handle before_image upload
         if ($request->hasFile('before_image')) {
-            // $data['before_image'] = $request->file('before_image')->store('gallery', 'public');
-
-            $imageName = time() . '.' . $request->before_image->extension();
-            $imgPath = $request->before_image->storeAs('gallery', $imageName);
-            $data['before_image'] = $imgPath;
+            $beforeImageName = 'before_' . time() . '_' . uniqid() . '.' . $request->before_image->extension();
+            $beforeImgPath = $request->before_image->storeAs('gallery', $beforeImageName);
+            $data['before_image'] = $beforeImgPath;
         }
 
+        // Handle after_image upload
         if ($request->hasFile('after_image')) {
-            // $data['after_image'] = $request->file('after_image')->store('gallery', 'public');
-            $imageName = time() . '.' . $request->after_image->extension();
-            $imgPath = $request->after_image->storeAs('gallery', $imageName);
-            $data['after_image'] = $imgPath;
+            $afterImageName = 'after_' . time() . '_' . uniqid() . '.' . $request->after_image->extension();
+            $afterImgPath = $request->after_image->storeAs('gallery', $afterImageName);
+            $data['after_image'] = $afterImgPath;
         }
+
 
         gallery::create($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gallery item added successfully!'
-        ]);
+        sweetalert()->success('Gallery item added successfully!');
+        return redirect()->back();
     }
 
     public function show($id)
@@ -85,42 +88,43 @@ class GalleryController extends Controller
             'service_type' => 'required|string|max:255',
             'before_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
             'after_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'featured' => 'boolean',
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $data = $request->all();
 
+        $data['featured'] = $request->has('featured');
+
         if ($request->hasFile('before_image')) {
-            if ($gallery->before_image) {
-                // Storage::disk('public')->delete($gallery->before_image);
-                unlink(public_path('asset/image/' . $gallery->before_image)); 
+            if ($gallery->before_image && file_exists(public_path($gallery->before_image))) {
+                unlink(public_path($gallery->before_image));
             }
             // $data['before_image'] = $request->file('before_image')->store('gallery', 'public');
 
-            $imageName = time() . '.' . $request->before_image->extension();
-            $imgPath = $request->before_image->storeAs('gallery', $imageName);
-            $data['before_image'] = $imgPath;
+            $beforeImageName = 'before_' . time() . '_' . uniqid() . '.' . $request->before_image->extension();
+            $beforeImgPath = $request->before_image->storeAs('gallery', $beforeImageName);
+            $data['before_image'] = $beforeImgPath;
         }
 
         if ($request->hasFile('after_image')) {
-            if ($gallery->after_image) {
-                // Storage::disk('public')->delete($gallery->after_image);
-                unlink(public_path('asset/image/' . $gallery->after_image)); 
+            if ($gallery->after_image && file_exists(public_path($gallery->after_image))) {
+                unlink(public_path($gallery->after_image));
             }
             // $data['after_image'] = $request->file('after_image')->store('gallery', 'public');
 
-            $imageName = time() . '.' . $request->after_image->extension();
-            $imgPath = $request->after_image->storeAs('gallery', $imageName);
-            $data['after_image'] = $imgPath;
+            $afterImageName = 'after_' . time() . '_' . uniqid() . '.' . $request->after_image->extension();
+            $afterImgPath = $request->after_image->storeAs('gallery', $afterImageName);
+            $data['after_image'] = $afterImgPath;
         }
 
         $gallery->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gallery item updated successfully!'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Gallery item updated successfully!'
+        // ]);
+        sweetalert()->success('Gallery item updated successfully!');
+        return redirect()->back();
     }
 
     public function destroy($id)
@@ -128,15 +132,13 @@ class GalleryController extends Controller
         $gallery = gallery::findOrFail($id);
 
         // Delete images
-        if ($gallery->before_image) {
-            // Storage::disk('public')->delete($gallery->before_image);
-            unlink(public_path('asset/image/' . $gallery->before_image)); 
-
+        if ($gallery->before_image && file_exists(public_path($gallery->before_image))) {
+            unlink(public_path($gallery->before_image));
         }
-
-        if ($gallery->after_image) {
-            // Storage::disk('public')->delete($gallery->after_image);
-            unlink(public_path('asset/image/' . $gallery->after_image)); 
+    
+        // Delete after_image if it exists
+        if ($gallery->after_image && file_exists(public_path($gallery->after_image))) {
+            unlink(public_path($gallery->after_image));
         }
 
         $gallery->delete();

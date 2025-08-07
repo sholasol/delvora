@@ -62,46 +62,76 @@
                     @if($galleries->count() > 0)
                         <div class="row">
                             @foreach($galleries as $gallery)
-                            <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="col-lg-6 col-md-12 mb-4">
                                 <div class="card h-100">
+                                    <!-- Before/After Image Container -->
                                     <div class="position-relative">
-                                        @if($gallery->before_image)
-                                        <img src="{{ asset('storage/gallery/' . $gallery->before_image) }}" class="card-img-top" alt="Before" style="height: 200px; object-fit: cover;">
-                                        @else
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                        <div class="row g-0">
+                                            <!-- Before Image -->
+                                            <div class="col-6">
+                                                <div class="position-relative">
+                                                    @if($gallery->before_image)
+                                                    <img src="{{ asset('asset/image/' . $gallery->before_image) }}"  class="img-fluid" alt="Before" style="height: 200px; width: 100%; object-fit: cover;">
+                                                    @else
+                                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                                    </div>
+                                                    @endif
+                                                    <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
+                                                        <small>BEFORE</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- After Image -->
+                                            <div class="col-6">
+                                                <div class="position-relative">
+                                                    @if($gallery->after_image)
+                                                    <img src="{{ asset('asset/image/' . $gallery->after_image) }}"  class="img-fluid" alt="After" style="height: 200px; width: 100%; object-fit: cover;">
+                                                    @else
+                                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                                        <i class="fas fa-image fa-2x text-muted"></i>
+                                                    </div>
+                                                    @endif
+                                                    <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white text-center py-1">
+                                                        <small>AFTER</small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        @endif
+                                        <!-- Status Badges -->
                                         <div class="position-absolute top-0 end-0 p-2">
                                             @if($gallery->featured)
-                                            <span class="badge bg-warning"><i class="fas fa-star"></i> Featured</span>
+                                            <span class="badge bg-warning mb-1 d-block"><i class="fas fa-star"></i> Featured</span>
                                             @endif
                                             <span class="badge {{ $gallery->status_badge }}">{{ ucfirst($gallery->status) }}</span>
                                         </div>
                                     </div>
+                                    
                                     <div class="card-body">
                                         <h6 class="card-title">{{ $gallery->title }}</h6>
                                         <p class="card-text small text-muted">{{ Str::limit($gallery->description, 100) }}</p>
                                         
+                                        <!-- Image Status Indicators -->
                                         <div class="row text-center mb-3">
                                             <div class="col-6">
-                                                <small class="text-muted">Before</small>
+                                                <small class="text-muted">Before Image</small>
                                                 @if($gallery->before_image)
-                                                <div class="text-success"><i class="fas fa-check"></i></div>
+                                                <div class="text-success"><i class="fas fa-check"></i> Available</div>
                                                 @else
-                                                <div class="text-danger"><i class="fas fa-times"></i></div>
+                                                <div class="text-danger"><i class="fas fa-times"></i> Missing</div>
                                                 @endif
                                             </div>
                                             <div class="col-6">
-                                                <small class="text-muted">After</small>
+                                                <small class="text-muted">After Image</small>
                                                 @if($gallery->after_image)
-                                                <div class="text-success"><i class="fas fa-check"></i></div>
+                                                <div class="text-success"><i class="fas fa-check"></i> Available</div>
                                                 @else
-                                                <div class="text-danger"><i class="fas fa-times"></i></div>
+                                                <div class="text-danger"><i class="fas fa-times"></i> Missing</div>
                                                 @endif
                                             </div>
                                         </div>
                                         
+                                        <!-- Details -->
                                         <div class="small text-muted mb-2">
                                             <div><i class="fas fa-tag me-1"></i>{{ $gallery->service_type }}</div>
                                             @if($gallery->customer)
@@ -112,6 +142,7 @@
                                             @endif
                                         </div>
                                         
+                                        <!-- Action Buttons -->
                                         <div class="btn-group w-100" role="group">
                                             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewGalleryModal{{ $gallery->id }}">
                                                 <i class="fas fa-eye"></i>
@@ -122,6 +153,9 @@
                                             <button type="button" class="btn btn-sm btn-outline-info" onclick="toggleFeatured({{ $gallery->id }})">
                                                 <i class="fas fa-star"></i>
                                             </button>
+                                            <a href="{{route('gallery.destroy', ['id' =>$gallery->id])}}" onclick="return confirm('Delets this images in the gallery?')" class="btn btn-sm btn-outline-danger" onclick="deleteGallery({{ $gallery->id }})">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +187,8 @@
                     <h5 class="modal-title">Add Gallery Item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="addGalleryForm" enctype="multipart/form-data">
+                <form method="POST" action="{{route('gallery.store')}}" enctype="multipart/form-data">
+                    @csrf
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -257,20 +292,26 @@
                         <div class="col-md-6">
                             <h6>Before</h6>
                             @if($gallery->before_image)
-                            <img src="{{ asset('storage/gallery/' . $gallery->before_image) }}" class="img-fluid rounded" alt="Before">
+                            <img src="{{ asset('storage/' . $gallery->before_image) }}" class="img-fluid rounded" alt="Before">
                             @else
                             <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
+                                <div class="text-center">
+                                    <i class="fas fa-image fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">No before image available</p>
+                                </div>
                             </div>
                             @endif
                         </div>
                         <div class="col-md-6">
                             <h6>After</h6>
                             @if($gallery->after_image)
-                            <img src="{{ asset('storage/gallery/' . $gallery->after_image) }}" class="img-fluid rounded" alt="After">
+                            <img src="{{ asset('storage/' . $gallery->after_image) }}" class="img-fluid rounded" alt="After">
                             @else
                             <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
-                                <i class="fas fa-image fa-3x text-muted"></i>
+                                <div class="text-center">
+                                    <i class="fas fa-image fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">No after image available</p>
+                                </div>
                             </div>
                             @endif
                         </div>
@@ -319,8 +360,35 @@
                     <h5 class="modal-title">Edit Gallery Item - {{ $gallery->title }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="editGalleryForm{{ $gallery->id }}" enctype="multipart/form-data">
+                <form method="POST" action="{{route('gallery.update', ['id' => $gallery->id])}}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PATCH')
+
                     <div class="modal-body">
+                        <!-- Current Images Preview -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6>Current Before Image</h6>
+                                @if($gallery->before_image)
+                                <img src="{{ asset('storage/' . $gallery->before_image) }}" class="img-fluid rounded" alt="Current Before" style="max-height: 150px;">
+                                @else
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                    <span class="text-muted">No image</span>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Current After Image</h6>
+                                @if($gallery->after_image)
+                                <img src="{{ asset('storage/' . $gallery->after_image) }}" class="img-fluid rounded" alt="Current After" style="max-height: 150px;">
+                                @else
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+                                    <span class="text-muted">No image</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Title *</label>
@@ -381,12 +449,12 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Before Image</label>
+                                <label class="form-label">New Before Image</label>
                                 <input type="file" class="form-control" name="before_image" accept="image/*">
                                 <small class="text-muted">Leave empty to keep current image</small>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">After Image</label>
+                                <label class="form-label">New After Image</label>
                                 <input type="file" class="form-control" name="after_image" accept="image/*">
                                 <small class="text-muted">Leave empty to keep current image</small>
                             </div>
@@ -431,62 +499,6 @@
     </div>
 
     <script>
-        // Handle add gallery form submission
-        document.getElementById('addGalleryForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch('{{ route("gallery.store") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
-        });
-
-        // Handle edit gallery form submissions
-        @foreach($galleries as $gallery)
-        document.getElementById('editGalleryForm{{ $gallery->id }}').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            fetch('{{ route("gallery.update", $gallery->id) }}', {
-                method: 'PATCH',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
-        });
-        @endforeach
-
         // Toggle featured status
         function toggleFeatured(galleryId) {
             fetch(`/admin/gallery/${galleryId}/toggle-featured`, {
@@ -509,5 +521,30 @@
                 alert('An error occurred. Please try again.');
             });
         }
+
+        // Delete gallery item
+        function deleteGallery(galleryId) {
+            if (confirm('Are you sure you want to delete this gallery item? This action cannot be undone.')) {
+                fetch(`/admin/gallery/${galleryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
+        }
     </script>
-</x-admin-layout> 
+</x-admin-layout>

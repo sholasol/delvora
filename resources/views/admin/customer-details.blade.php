@@ -106,7 +106,29 @@
                                                     <td>{{ $booking->service_name }}</td>
                                                     <td>{{ $booking->formatted_preferred_date }}</td>
                                                     <td>
-                                                        <span class="badge {{ $booking->status_badge }}">
+                                                        @php
+                                                            $status = '';
+                                                            switch ($booking->status) {
+                                                                case 'in_progress':
+                                                                    $status = 'warning';
+                                                                    break;
+                                                                case 'confirmed':
+                                                                    $status = 'primary';
+                                                                    break;
+                                                                case 'completed':
+                                                                    $status = 'success';
+                                                                    break;
+                                                                case 'cancelled':
+                                                                    $status = 'danger';
+                                                                    break;
+                                                                case 'pending':
+                                                                    $status = 'danger';
+                                                                    break;
+                                                                default:
+                                                        $status = 'dark';
+                                                            }
+                                                        @endphp
+                                                        <span class="text-{{ $status }}">
                                                             {{ ucfirst($booking->status) }}
                                                         </span>
                                                     </td>
@@ -197,7 +219,7 @@
                     <h5 class="modal-title">Edit Customer</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form class="ajax-form" action="{{ route('customers.update', $customer->id) }}" method="POST">
+                <form method="POST" action="{{route('customers.update', ['id' => $customer->id])}}">
                     @csrf
                     @method('PATCH')
                     <div class="modal-body">

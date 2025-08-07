@@ -36,6 +36,7 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
+       
         $customer = customer::findOrFail($id);
 
         $request->validate([
@@ -48,10 +49,8 @@ class CustomerController extends Controller
 
         $customer->update($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Customer updated successfully!'
-        ]);
+        sweetalert()->success('Customer updated successfully!');
+        return redirect()->back();
     }
 
     public function destroy($id)
@@ -60,18 +59,23 @@ class CustomerController extends Controller
 
         // Check if customer has any bookings
         if ($customer->bookings()->count() > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot delete customer with existing bookings.'
-            ], 400);
+
+            sweetalert()->warning('Cannot delete customer with existing bookings');
+            return redirect()->back();
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => 'Cannot delete customer with existing bookings.'
+            // ], 400);
         }
 
         $customer->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Customer deleted successfully!'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Customer deleted successfully!'
+        // ]);
+        sweetalert()->success('Customer deleted successfully!');
+        return redirect()->back();
     }
 
     public function export()

@@ -24,7 +24,8 @@ class booking extends Model
         'total_amount',
         'payment_status',
         'booking_reference',
-        'special_instructions'
+        'special_instructions',
+        'assigned_staff_id'
     ];
 
     protected $casts = [

@@ -143,20 +143,24 @@ class FrontController extends Controller
 
     public function contactSubmit(Request $request)
     {
+        dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
-            'subject' => 'required|string|max:255',
+            // 'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
 
         // Here you would typically send an email or store the contact form
         // For now, we'll just return a success response
+
+       sweetalert()->success('Thank you for your message! We will get back to you soon.');
+       return redirect()->back();
         
-        return response()->json([
-            'success' => true,
-            'message' => 'Thank you for your message! We will get back to you soon.'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Thank you for your message! We will get back to you soon.'
+        // ]);
     }
 }

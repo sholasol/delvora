@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ServicesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $statusFilter = $request->query('status');
         $services = services::withCount('bookings')
+            ->when($statusFilter, function ($query, $status) {
+                return $query->where('status', $status);
+            })
             ->latest()
             ->paginate(15);
 
@@ -19,6 +23,7 @@ class ServicesController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -28,11 +33,15 @@ class ServicesController extends Controller
             'include' => 'nullable|string',
             'exclude' => 'nullable|string',
             'status' => 'required|in:active,inactive,draft',
-            'featured' => 'boolean',
+            'sort_order' => 'nullable|numeric',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = $request->all();
+
+        // dd($data);
+
+        $data['featured'] = $request->has('featured');
 
         if ($request->hasFile('image')) {
             // $data['image'] = $request->file('image')->store('services', 'public');
@@ -42,12 +51,11 @@ class ServicesController extends Controller
             $data['image'] = $imgPath;
         }
 
+       
         services::create($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service added successfully!'
-        ]);
+        sweetalert()->success('Service added successfully!');
+        return redirect()->back();
     }
 
     public function show($id)
@@ -78,11 +86,12 @@ class ServicesController extends Controller
             'include' => 'nullable|string',
             'exclude' => 'nullable|string',
             'status' => 'required|in:active,inactive,draft',
-            'featured' => 'boolean',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = $request->all();
+
+        $data['featured'] = $request->has('featured');
 
         if ($request->hasFile('image')) {
             // Delete old image
@@ -99,10 +108,8 @@ class ServicesController extends Controller
 
         $service->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service updated successfully!'
-        ]);
+        sweetalert()->success('Service updated successfully!');
+        return redirect()->back();
     }
 
     public function destroy($id)
@@ -111,10 +118,12 @@ class ServicesController extends Controller
 
         // Check if service has any bookings
         if ($service->bookings()->count() > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot delete service with existing bookings.'
-            ], 400);
+            sweetalert()->success('Cannot delete service with existing booking!');
+        return redirect()->back();
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => 'Cannot delete service with existing bookings.'
+            // ], 400);
         }
 
         // Delete image if exists
@@ -125,10 +134,12 @@ class ServicesController extends Controller
 
         $service->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service deleted successfully!'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Service deleted successfully!'
+        // ]);
+        sweetalert()->success('Service deleted successfully!');
+        return redirect()->back();
     }
 
     public function toggleFeatured($id)
@@ -136,11 +147,14 @@ class ServicesController extends Controller
         $service = services::findOrFail($id);
         $service->update(['featured' => !$service->featured]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Service featured status updated!',
-            'featured' => $service->featured
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Service featured status updated!',
+        //     'featured' => $service->featured
+        // ]);
+
+        sweetalert()->success('Service featured status updated!');
+        return redirect()->back();
     }
 
     public function updateSortOrder(Request $request)
@@ -156,9 +170,12 @@ class ServicesController extends Controller
                 ->update(['sort_order' => $serviceData['sort_order']]);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Services order updated successfully!'
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Services order updated successfully!'
+        // ]);
+
+        sweetalert()->success('Service order updated successfully!');
+        return redirect()->back();
     }
 }

@@ -72,7 +72,7 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="me-3">
                                                     @if($member->avatar)
-                                                        <img src="{{ $member->avatar_url }}" alt="{{ $member->name }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                                        <img src="{{ asset('asset/image/' . $member->avatar) }}" alt="{{ $member->name }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                     @else
                                                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                                             <span class="fw-bold">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
@@ -114,7 +114,26 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge {{ $member->status_badge }}">
+                                            @php
+                                                $stus = '';
+                                                switch ($member->status) {
+                                                    case 'active':
+                                                        $stus = 'success';
+                                                        break;
+                                                    case 'on_leave':
+                                                        $stus = 'info';
+
+                                                    case 'inactive':
+                                                        $stus = 'warning';
+                                                        break;
+                                                    case 'terminated':
+                                                        $stus = 'danger';
+                                                        break;
+                                                    default:
+                                                        $stus = 'danger';
+                                                }
+                                            @endphp
+                                            <span class="text-{{ $stus }}">
                                                 {{ ucfirst(str_replace('_', ' ', $member->status)) }}
                                             </span>
                                         </td>
@@ -161,7 +180,8 @@
                     <h5 class="modal-title">Add New Staff Member</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="addStaffForm" enctype="multipart/form-data">
+                <form method="POST" action="{{route('staff.store')}}" enctype="multipart/form-data">
+                    @csrf
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -308,7 +328,10 @@
                     <h5 class="modal-title">Edit Staff Member - {{ $member->name }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="editStaffForm{{ $member->id }}" enctype="multipart/form-data">
+                <form method="POST" action="{{route('staff.update', ['id' => $member->id])}}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PATCH')
+
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
