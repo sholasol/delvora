@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactEmail;
 use App\Models\services;
 use App\Models\gallery;
 use App\Models\booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class FrontController extends Controller
 {
@@ -143,7 +145,7 @@ class FrontController extends Controller
 
     public function contactSubmit(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -152,15 +154,23 @@ class FrontController extends Controller
             'message' => 'required|string',
         ]);
 
-        // Here you would typically send an email or store the contact form
-        // For now, we'll just return a success response
+          // Add the current page URL to the data
+    $data = $request->all();
+    $data['page_url'] = url()->previous();
 
-       sweetalert()->success('Thank you for your message! We will get back to you soon.');
-       return redirect()->back();
-        
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Thank you for your message! We will get back to you soon.'
-        // ]);
+    try {
+        // Send email to admin
+        Mail::to('admin@admin.com')
+            ->send(new ContactEmail($data));
+
+        sweetalert()->success('Thank you for your message! We will get back to you soon.');
+        return redirect()->back();
+    } catch (\Exception $e) {
+        // Log the error
+        \Log::error('Contact form submission failed: ' . $e->getMessage());
+
+        sweetalert()->error('Something went wrong. Please try again later.');
+        return redirect()->back()->withInput();
+    }
     }
 }
